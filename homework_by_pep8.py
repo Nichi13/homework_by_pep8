@@ -13,8 +13,8 @@ class Mail:
     def __init__(self, login, password, mail_smtp=GMAIL_SMTP, mail_imap=GMAIL_IMAP, header=None):
         self.login = login
         self.password = password
-        self.GMAIL_PORT = mail_smtp
-        self.IMAP = mail_imap
+        self.mail_port = mail_smtp
+        self.imap = mail_imap
         self.header = header
 
     def send_message(self, subject, message, recipients):
@@ -27,7 +27,7 @@ class Mail:
         pass
 
     def client_indification(self):
-        mail_client_indif = smtplib.SMTP(self.GMAIL_PORT, 587)
+        mail_client_indif = smtplib.SMTP(self.mail_port, 587)
         self.mail_client_indif = mail_client_indif
         # identify ourselves to smtp gmail client
         mail_client_indif.ehlo()
@@ -45,7 +45,7 @@ class Mail:
         pass
 
     def get_mail_for_client(self):
-        get_mail = imaplib.IMAP4_SSL(self.IMAP)
+        get_mail = imaplib.IMAP4_SSL(self.imap)
         get_mail.login(self.login, self.password)
         get_mail.list()
         get_mail.select('inbox')
