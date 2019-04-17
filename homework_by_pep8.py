@@ -4,31 +4,30 @@ import imaplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+GMAIL_SMTP = 'smtp.gmail.com'
+GMAIL_IMAP = 'imap.gmail.com'
+
 
 class Mail:
 
-    def __init__(self, login, password, subject, message, recipients, header=None):
+    def __init__(self, login, password, mail_smtp=GMAIL_SMTP, mail_imap=GMAIL_IMAP, header=None):
         self.login = login
         self.password = password
-        self.subject = subject
-        self.message = message
+        self.GMAIL_PORT = mail_smtp
+        self.IMAP = mail_imap
         self.header = header
-        self.recipients = recipients
-        self.GMAIL_SMTP = 'smtp.gmail.com'
-        self.GMAIL_IMAP = 'imap.gmail.com'
 
-    def send_message(self):
-        message = MIMEMultipart()
-        message['From'] = self.login
-        message['To'] = ', '.join(self.recipients)
-        message['Subject'] = self.subject
-        message.attach(MIMEText(self.message))
+    def send_message(self, subject, message, recipients):
+        self.message = message
+        message_send = MIMEMultipart()
+        message_send['From'] = self.login
+        message_send['To'] = ', '.join(recipients)
+        message_send['Subject'] = subject
+        message_send.attach(MIMEText(message))
         pass
 
-    # send message
-
     def client_indification(self):
-        mail_client_indif = smtplib.SMTP(self.GMAIL_SMTP, 587)
+        mail_client_indif = smtplib.SMTP(self.GMAIL_PORT, 587)
         self.mail_client_indif = mail_client_indif
         # identify ourselves to smtp gmail client
         mail_client_indif.ehlo()
@@ -45,11 +44,8 @@ class Mail:
         self.mail_client_indif.quit()
         pass
 
-    # send end
-    # recieve
-
     def get_mail_for_client(self):
-        get_mail = imaplib.IMAP4_SSL(self.GMAIL_IMAP)
+        get_mail = imaplib.IMAP4_SSL(self.IMAP)
         get_mail.login(self.login, self.password)
         get_mail.list()
         get_mail.select('inbox')
@@ -64,13 +60,9 @@ class Mail:
         return email_message
 
 
-# end recieve
-
-
 if __name__ == '__main__':
-    s = Mail('login@gmail.com', 'qwerty', 'Subject',
-             'Message', recipients=['vasya@email.com', 'petya@email.com'])
-    s.send_message()
+    s = Mail('login@gmail.com', 'qwerty')
+    s.send_message('Subject', 'Message', recipients=['vasya@email.com', 'petya@email.com'])
     s.client_indification()
     s.send_mail()
     print(s.get_mail_for_client())
